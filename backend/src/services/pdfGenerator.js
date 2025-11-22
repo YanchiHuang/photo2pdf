@@ -22,16 +22,20 @@ exports.generatePdf = (imagePaths, options = {}) => {
         const { size = 'A4', orientation = 'portrait', fit = 'contain' } = options;
 
         imagePaths.forEach((img) => {
-            doc.addPage({ size, layout: orientation });
+            doc.addPage({ size, layout: orientation, margin: 0 });
 
-            // Calculate fit options if needed, but pdfkit's fit/cover works well
-            // Default A4: 595.28 x 841.89 (points)
-
-            doc.image(img, {
-                fit: [doc.page.width, doc.page.height],
+            const imgOptions = {
                 align: 'center',
                 valign: 'center',
-            });
+            };
+
+            if (fit === 'cover') {
+                imgOptions.cover = [doc.page.width, doc.page.height];
+            } else {
+                imgOptions.fit = [doc.page.width, doc.page.height];
+            }
+
+            doc.image(img, imgOptions);
         });
 
         doc.end();
